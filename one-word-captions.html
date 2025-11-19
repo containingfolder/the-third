@@ -15,11 +15,11 @@
     {"@type":"ListItem","position":8,"name":"Vibes"},
     {"@type":"ListItem","position":9,"name":"Heart"},
     {"@type":"ListItem","position":10,"name":"Unstoppable"},
-    {"@type":"ListItem","position":11,"name":"Moody"},          <!-- Deep/Moody -->
-    {"@type":"ListItem","position":12,"name":"Sunshine"},      <!-- Positive -->
-    {"@type":"ListItem","position":13,"name":"Gorgeous"},      <!-- Beauty -->
-    {"@type":"ListItem","position":14,"name":"Magic"},         <!-- Dreamy -->
-    {"@type":"ListItem","position":15,"name":"Squad"},         <!-- Friendship -->
+    {"@type":"ListItem","position":11,"name":"Moody"},          
+    {"@type":"ListItem","position":12,"name":"Sunshine"},     
+    {"@type":"ListItem","position":13,"name":"Gorgeous"},      
+    {"@type":"ListItem","position":14,"name":"Magic"},       
+    {"@type":"ListItem","position":15,"name":"Squad"},       
     {"@type":"ListItem","position":16,"name":"Ethereal"},
     {"@type":"ListItem","position":17,"name":"Lost"},
     {"@type":"ListItem","position":18,"name":"Forever"}
@@ -99,4 +99,5 @@
     document.querySelectorAll(".social-icon[data-share]").forEach((e => {
         const t = e.dataset.share;
         "copy" === t ? e.onclick = copyToClipboard : shareLinks[t] && (e.onclick = () => window.open(shareLinks[t], "_blank", "noopener"))
+
     }))</script>
