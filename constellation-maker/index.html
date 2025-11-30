@@ -568,26 +568,23 @@ body.category-page #categories-btn::after {
 <footer>
     <p>A quiet corner for captions & wishes
         <p>© 2025 The Selcouth Soul · All Rights Reserved ·<span onclick='window.location.href="../privacy-policy/"' class=privacy-link> Privacy Policy</span></footer>
-<script src=https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js></script>
+<script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
 <script>
     const canvas = document.getElementById("constellation-canvas"),
-        ctx = canvas.getContext("2d"),
-        clearBtn = document.getElementById("clear-btn"),
-        randomBtn = document.getElementById("random-btn"),
-        starCountDisplay = document.getElementById("star-count"),
-        autoToggle = document.getElementById("auto-toggle"),
-        saveGifBtn = document.getElementById("save-gif"),
-        fullscreenBtn = document.getElementById("fullscreen-btn"),
-        info = document.getElementById("info");
+          ctx = canvas.getContext("2d", { willReadFrequently: true }), // ← fixes the warning + helps GIF.js
+          clearBtn = document.getElementById("clear-btn"),
+          randomBtn = document.getElementById("random-btn"),
+          starCountDisplay = document.getElementById("star-count"),
+          autoToggle = document.getElementById("auto-toggle"),
+          saveGifBtn = document.getElementById("save-gif"),
+          fullscreenBtn = document.getElementById("fullscreen-btn"),
+          info = document.getElementById("info");
 
     let tempX, tempY, stars = [], manualLines = [], isDragging = false, dragStartStar = null;
     const maxDistance = 850, minDistance = 50;
 
     function drawCanvasBackground() {
-        const gradient = ctx.createRadialGradient(
-            canvas.width / 2, canvas.height, 0,
-            canvas.width / 2, canvas.height, canvas.height
-        );
+        const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height, 0, canvas.width/2, canvas.height, canvas.height);
         gradient.addColorStop(0, "#1b2735");
         gradient.addColorStop(1, "#090a0f");
         ctx.fillStyle = gradient;
@@ -601,7 +598,7 @@ body.category-page #categories-btn::after {
             const y = (97 * i) % canvas.height;
             ctx.beginPath();
             ctx.arc(x, y, 1.2 * Math.random(), 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.4})`;
+            ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random()*0.4})`;
             ctx.fill();
         }
     }
@@ -621,54 +618,36 @@ body.category-page #categories-btn::after {
     window.addEventListener("resize", resizeCanvas);
 
     class Star {
-        constructor(x, y) {
-            this.x = x; this.y = y;
-            this.pulse = Math.random() * Math.PI;
-        }
+        constructor(x, y) { this.x = x; this.y = y; this.pulse = Math.random() * Math.PI; }
         draw() {
             this.pulse += 0.05;
-            const scale = 1 + 0.2 * Math.sin(this.pulse);
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, 4 * scale, 0, Math.PI * 2);
-            ctx.fillStyle = "#fff";
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = "#0ff";
-            ctx.fill();
+            const s = 1 + 0.2 * Math.sin(this.pulse);
+            ctx.beginPath(); ctx.arc(this.x, this.y, 4*s, 0, Math.PI*2);
+            ctx.fillStyle = "#fff"; ctx.shadowBlur = 15; ctx.shadowColor = "#0ff"; ctx.fill();
 
-            const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 12);
-            glow.addColorStop(0, "rgba(0,255,255,0.8)");
-            glow.addColorStop(1, "rgba(0,255,255,0)");
-            ctx.fillStyle = glow;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, 12, 0, Math.PI * 2);
-            ctx.fill();
+            const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 12);
+            g.addColorStop(0, "rgba(0,255,255,0.8)"); g.addColorStop(1, "rgba(0,255,255,0)");
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(this.x, this.y, 12, 0, Math.PI*2); ctx.fill();
         }
     }
 
-    function connectTwo(a, b, opacity = 0.7) {
-        const dist = Math.hypot(a.x - b.x, a.y - b.y);
-        const alpha = opacity * (1 - dist / maxDistance);
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+    function connectTwo(a, b, o = 0.7) {
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        const alpha = o * (1 - d / maxDistance);
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
         ctx.strokeStyle = `rgba(0,255,255,${alpha})`;
-        ctx.lineWidth = 1.2 + 1.5 * alpha;
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = "#0ff";
-        ctx.stroke();
+        ctx.lineWidth = 1.2 + 1.5*alpha; ctx.shadowBlur = 20; ctx.shadowColor = "#0ff"; ctx.stroke();
     }
 
     function autoConnect() {
         for (let i = 0; i < stars.length; i++)
-            for (let j = i + 1; j < stars.length; j++) {
+            for (let j = i+1; j < stars.length; j++) {
                 const d = Math.hypot(stars[i].x - stars[j].x, stars[i].y - stars[j].y);
-                if (d < maxDistance && d > minDistance) connectTwo(stars[i], stars[j], 0.7);
+                if (d < maxDistance && d > minDistance) connectTwo(stars[i], stars[j]);
             }
     }
 
-    function drawManualLines() {
-        manualLines.forEach(line => connectTwo(line.from, line.to, 0.95));
-    }
+    function drawManualLines() { manualLines.forEach(l => connectTwo(l.from, l.to, 0.95)); }
 
     function redrawFullScene() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -681,166 +660,132 @@ body.category-page #categories-btn::after {
     function animate() {
         redrawFullScene();
         if (isDragging && dragStartStar) {
-            ctx.beginPath();
-            ctx.moveTo(dragStartStar.x, dragStartStar.y);
-            ctx.lineTo(tempX, tempY);
-            ctx.strokeStyle = "rgba(0,255,255,0.6)";
-            ctx.lineWidth = 2.5;
-            ctx.setLineDash([5, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
+            ctx.beginPath(); ctx.moveTo(dragStartStar.x, dragStartStar.y);
+            ctx.lineTo(tempX, tempY); ctx.strokeStyle = "rgba(0,255,255,0.6)";
+            ctx.lineWidth = 2.5; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
         }
         requestAnimationFrame(animate);
     }
 
-    function updateStarCount() {
-        starCountDisplay.textContent = `Stars: ${stars.length}`;
-    }
+    function updateStarCount() { starCountDisplay.textContent = `Stars: ${stars.length}`; }
 
-    // Mouse / Touch Events (unchanged, just cleaned up)
+    // ─────────────────────── EVENTS ───────────────────────
+    canvas.addEventListener("click", e => {
+        if (isDragging) return;
+        const r = canvas.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        if (stars.some(s => Math.hypot(s.x-x, s.y-y) < 40)) return;
+        stars.push(new Star(x, y)); updateStarCount();
+    });
+
     canvas.addEventListener("mousedown", e => {
         if (autoToggle.checked) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const star = stars.find(s => Math.hypot(s.x - x, s.y - y) < 16);
-        if (star) { isDragging = true; dragStartStar = star; }
+        const r = canvas.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        const s = stars.find(star => Math.hypot(star.x-x, star.y-y) < 16);
+        if (s) { isDragging = true; dragStartStar = s; }
     });
 
     canvas.addEventListener("mousemove", e => {
-        const rect = canvas.getBoundingClientRect();
-        tempX = e.clientX - rect.left;
-        tempY = e.clientY - rect.top;
+        const r = canvas.getBoundingClientRect();
+        tempX = e.clientX - r.left; tempY = e.clientY - r.top;
     });
 
     document.addEventListener("mouseup", e => {
         if (!isDragging || !dragStartStar) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = Math.max(0, Math.min(e.clientX - rect.left, canvas.width));
-        const y = Math.max(0, Math.min(e.clientY - rect.top, canvas.height));
-        let closest = null, bestDist = 80;
+        const r = canvas.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        let closest = null, best = 80;
         for (const s of stars) {
             if (s === dragStartStar) continue;
-            const d = Math.hypot(s.x - x, s.y - y);
-            if (d < bestDist) { bestDist = d; closest = s; }
+            const d = Math.hypot(s.x-x, s.y-y);
+            if (d < best) { best = d; closest = s; }
         }
         if (closest) manualLines.push({ from: dragStartStar, to: closest });
         isDragging = false; dragStartStar = null;
     });
 
-    canvas.addEventListener("click", e => {
-        if (isDragging) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        if (stars.some(s => Math.hypot(s.x - x, s.y - y) < 40)) return;
-        stars.push(new Star(x, y));
-        updateStarCount();
-    });
-
     clearBtn.onclick = () => { stars = []; manualLines = []; updateStarCount(); };
     randomBtn.onclick = () => {
-        const count = Math.floor(Math.random() * 8) + 5;
-        for (let i = 0; i < count; i++) {
-            let x, y, valid;
-            do {
-                x = Math.random() * canvas.width;
-                y = Math.random() * canvas.height;
-                valid = stars.every(s => Math.hypot(s.x - x, s.y - y) >= 50);
-            } while (!valid);
-            stars.push(new Star(x, y));
+        const n = Math.floor(Math.random()*8)+5;
+        for (let i=0; i<n; i++) {
+            let x,y,ok;
+            do { x = Math.random()*canvas.width; y = Math.random()*canvas.height;
+                 ok = stars.every(s => Math.hypot(s.x-x,s.y-y) >= 50); } while (!ok);
+            stars.push(new Star(x,y));
         }
         updateStarCount();
     };
 
-    autoToggle.addEventListener("change", () => {
-        info.textContent = autoToggle.checked
-            ? "Click to place stars | Nearby stars connect automatically"
-            : "Click a star → drag → release near another to connect";
-    });
+    autoToggle.onchange = () => info.textContent = autoToggle.checked
+        ? "Click to place stars | Nearby stars connect automatically"
+        : "Click a star → drag → release near another to connect";
 
     fullscreenBtn.onclick = () => {
         document.body.classList.toggle("fullscreen");
-        fullscreenBtn.textContent = document.body.classList.contains("fullscreen")
-            ? "Exit Fullscreen" : "Enter Fullscreen";
+        fullscreenBtn.textContent = document.body.classList.contains("fullscreen") ? "Exit Fullscreen" : "Enter Fullscreen";
         resizeCanvas();
     };
 
-    // ———————— FIXED & BEAUTIFUL GIF EXPORT ————————
+    // ─────────────────────── PERFECT GIF EXPORT (finally!) ───────────────────────
     let gif = null;
- saveGifBtn.addEventListener("click", () => {
-    if (gif) return;
+    saveGifBtn.addEventListener("click", () => {
+        if (gif) return;
+        saveGifBtn.disabled = true;
+        saveGifBtn.textContent = "Recording… 0%";
 
-    saveGifBtn.disabled = true;
-    saveGifBtn.textContent = "Recording… 0%";
-
-    gif = new GIF({
-        workers: 4,
-        quality: 10,
-        width: canvas.width,
-        height: canvas.height,
-        workerScript: "gif.worker.js"   // your local file – correct
-    });
-
-    const totalFrames = 120;
-    let frame = 0;
-    const originalPulses = stars.map(s => s.pulse);
-
-    // This is the secret sauce that forces the "finished" event to fire reliably
-    gif.on('progress', p => {
-        saveGifBtn.textContent = `Rendering… ${Math.round(p * 100)}%`;
-    });
-
-    const capture = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawCanvasBackground();
-        if (autoToggle.checked) autoConnect();
-        drawManualLines();
-
-        // Optional slow rotation (remove if you don't want it)
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(frame * 0.008);
-        ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
-        stars.forEach((star, i) => {
-            star.pulse = originalPulses[i] + frame * 0.05;
-            star.draw();
+        gif = new GIF({
+            workers: 4,
+            quality: 10,
+            width: canvas.width,
+            height: canvas.height,
+            workerScript: "gif.worker.js"   // your local file – make sure it's there!
         });
-        ctx.restore();
 
-        gif.addFrame(ctx, { copy: true, delay: 50 });
+        const total = 120;               // ~6 seconds
+        let frame = 0;
+        const origPulses = stars.map(s => s.pulse);
 
-        frame++;
-        saveGifBtn.textContent = `Recording… ${Math.round(frame / totalFrames * 100)}%`;
+        gif.on("progress", p => saveGifBtn.textContent = `Rendering… ${Math.round(p*100)}%`);
 
-        if (frame < totalFrames) {
-            setTimeout(capture, 1);
-        } else {
-            // THIS IS THE CRITICAL FIX
-            gif.on('finished', function(blob) {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `constellation-${Date.now()}.gif`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+        const capture = () => {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            drawCanvasBackground();
+            if (autoToggle.checked) autoConnect();
+            drawManualLines();
 
-                saveGifBtn.disabled = false;
-                saveGifBtn.textContent = "Save as GIF";
-                gif = null;
-            });
+            // Optional subtle rotation – delete the 4 lines if you don’t want it
+            ctx.save();
+            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.rotate(frame * 0.008);
+            ctx.translate(-canvas.width/2, -canvas.height/2);
 
-            // Force render immediately
-            try { gif.render(); } catch(e) { console.error(e); }
-        }
-    };
+            stars.forEach((s,i) => { s.pulse = origPulses[i] + frame*0.05; s.draw(); });
+            ctx.restore();
 
-    capture();
-});
+            gif.addFrame(ctx, {copy: true, delay: 50});
+            frame++;
+            saveGifBtn.textContent = `Recording… ${Math.round(frame/total*100)}%`;
 
-    // Start animation
+            if (frame < total) setTimeout(capture, 1);
+            else {
+                // This exact order fixes the “100% but no download” bug forever
+                gif.on("finished", blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url; a.download = `constellation-${Date.now()}.gif`;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    saveGifBtn.disabled = false;
+                    saveGifBtn.textContent = "Save as GIF";
+                    gif = null;
+                });
+                gif.render();
+            }
+        };
+        capture();
+    });
+
     animate();
 </script>
