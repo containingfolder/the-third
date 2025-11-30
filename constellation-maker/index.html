@@ -729,63 +729,87 @@ body.category-page #categories-btn::after {
 
     // ─────────────────────── PERFECT GIF EXPORT (finally!) ───────────────────────
     let gif = null;
-    saveGifBtn.addEventListener("click", () => {
-        if (gif) return;
-        saveGifBtn.disabled = true;
-        saveGifBtn.textContent = "Recording… 0%";
-
+saveGifBtn.addEventListener("click", () => {
+    if (gif || stars.length === 0) {
+        if (stars.length === 0) alert("Add some stars first!");  // ← Helpful message
+        return;
+    }
+    saveGifBtn.disabled = true;
+    saveGifBtn.textContent = "Recording… 0%";
+    
+    try {
         gif = new GIF({
-            workers: 4,
+            workers: 2,  // ← Reduced for stability
             quality: 10,
             width: canvas.width,
             height: canvas.height,
-            workerScript: "../gif.worker.js"   // your local file – make sure it's there!
+            workerScript: '/gif.worker.js'  // ← Use absolute root path
         });
+    } catch (err) {
+        console.error("GIF init failed:", err);  // ← Logs to console for debug
+        alert("GIF setup error — check console. Try fewer stars?");
+        saveGifBtn.disabled = false;
+        saveGifBtn.textContent = "Save as GIF";
+        return;
+    }
 
-        const total = 120;               // ~6 seconds
-        let frame = 0;
-        const origPulses = stars.map(s => s.pulse);
-
-        gif.on("progress", p => saveGifBtn.textContent = `Rendering… ${Math.round(p*100)}%`);
-
-        const capture = () => {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            drawCanvasBackground();
-            if (autoToggle.checked) autoConnect();
-            drawManualLines();
-
-            // Optional subtle rotation – delete the 4 lines if you don’t want it
-            ctx.save();
-            ctx.translate(canvas.width/2, canvas.height/2);
-            ctx.rotate(frame * 0.008);
-            ctx.translate(-canvas.width/2, -canvas.height/2);
-
-            stars.forEach((s,i) => { s.pulse = origPulses[i] + frame*0.05; s.draw(); });
-            ctx.restore();
-
-            gif.addFrame(ctx, {copy: true, delay: 50});
-            frame++;
-            saveGifBtn.textContent = `Recording… ${Math.round(frame/total*100)}%`;
-
-            if (frame < total) setTimeout(capture, 1);
-            else {
-                // This exact order fixes the “100% but no download” bug forever
-                gif.on("finished", blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url; a.download = `constellation-${Date.now()}.gif`;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-
-                    saveGifBtn.disabled = false;
-                    saveGifBtn.textContent = "Save as GIF";
-                    gif = null;
-                });
-                gif.render();
-            }
-        };
-        capture();
+    const total = 60;  // ← Shorter for testing (3 sec)
+    let frame = 0;
+    const origPulses = stars.map(s => s.pulse);
+    
+    gif.on("progress", p => {
+        saveGifBtn.textContent = `Rendering… ${Math.round(p * 100)}%`;
     });
-
+    
+    gif.on('error', err => {  // ← New: Catch worker errors
+        console.error("GIF render error:", err);
+        alert("Render failed — try shorter GIF or check console.");
+        saveGifBtn.disabled = false;
+        saveGifBtn.textContent = "Save as GIF";
+        gif = null;
+    });
+    
+    const capture = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawCanvasBackground();
+        if (autoToggle.checked) autoConnect();
+        drawManualLines();
+        
+        // Subtle rotation
+        ctx.save();
+        ctx.translate(canvas.width/2, canvas.height/2);
+        ctx.rotate(frame * 0.008);
+        ctx.translate(-canvas.width/2, -canvas.height/2);
+        stars.forEach((s, i) => { 
+            s.pulse = origPulses[i] + frame * 0.05; 
+            s.draw(); 
+        });
+        ctx.restore();
+        
+        gif.addFrame(ctx, { copy: true, delay: 50 });
+        frame++;
+        saveGifBtn.textContent = `Recording… ${Math.round(frame / total * 100)}%`;
+        
+        if (frame < total) {
+            setTimeout(capture, 50);  // ← Slower capture for CPU
+        } else {
+            gif.on("finished", blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `constellation-${Date.now()}.gif`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                saveGifBtn.disabled = false;
+                saveGifBtn.textContent = "Save as GIF";
+                gif = null;
+            });
+            gif.render();
+        }
+    };
+    capture();
+});
     animate();
 </script>
