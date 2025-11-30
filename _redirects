@@ -1,0 +1,26 @@
+# Old .html URLs → new clean folder URLs (with trailing slash)
+/index.html                              /                                      301!
+/about.html                              /about/                                301!
+/privacy-policy.html                     /privacy-policy/                       301!
+/terms-and-conditions.html               /terms-and-conditions/                 301!
+/10-best-motivational-captions.html      /10-best-motivational-captions/        301!
+/december-2025-motivational-quotes.html  /december-2025-motivational-quotes/    301!
+/one-word-captions.html                  /one-word-captions/                    301!
+/good-vibes.html                         /good-vibes/                           301!
+/all-pages.html                          /all-pages/                            301!
+/feedback-form.html                      /feedback-form/                        301!
+/font-converter.html                     /font-converter/                       301!
+/constellation-maker.html                /constellation-maker/                  301!
+
+# anotherpart
+/about                                   /about/                                301
+/privacy-policy                          /privacy-policy/                       301
+/terms-and-conditions                    /terms-and-conditions/                 301
+/10-best-motivational-captions           /10-best-motivational-captions/        301
+/december-2025-motivational-quotes       /december-2025-motivational-quotes/    301
+/one-word-captions                       /one-word-captions/                    301
+/good-vibes                              /good-vibes/                           301
+/all-pages                               /all-pages/                            301
+/feedback-form                           /feedback-form/                        301
+/font-converter                          /font-converter/                       301
+/constellation-maker                     /constellation-maker/                  301
