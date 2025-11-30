@@ -768,73 +768,78 @@ body.category-page #categories-btn::after {
 
     // ———————— FIXED & BEAUTIFUL GIF EXPORT ————————
     let gif = null;
-    saveGifBtn.addEventListener("click", () => {
-        if (gif) return;
+ saveGifBtn.addEventListener("click", () => {
+    if (gif) return;
 
-        saveGifBtn.disabled = true;
-        saveGifBtn.textContent = "Preparing…";
+    saveGifBtn.disabled = true;
+    saveGifBtn.textContent = "Recording… 0%";
 
-        gif = new GIF({
-            workers: 4,
-            quality: 10,
-            width: canvas.width,
-            height: canvas.height,
-            workerScript: "gif.worker.js"  // ← Your local file (already uploaded)
+    gif = new GIF({
+        workers: 4,
+        quality: 10,
+        width: canvas.width,
+        height: canvas.height,
+        workerScript: "gif.worker.js"   // your local file – correct
+    });
+
+    const totalFrames = 120;
+    let frame = 0;
+    const originalPulses = stars.map(s => s.pulse);
+
+    // This is the secret sauce that forces the "finished" event to fire reliably
+    gif.on('progress', p => {
+        saveGifBtn.textContent = `Rendering… ${Math.round(p * 100)}%`;
+    });
+
+    const capture = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawCanvasBackground();
+        if (autoToggle.checked) autoConnect();
+        drawManualLines();
+
+        // Optional slow rotation (remove if you don't want it)
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(frame * 0.008);
+        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+        stars.forEach((star, i) => {
+            star.pulse = originalPulses[i] + frame * 0.05;
+            star.draw();
         });
+        ctx.restore();
 
-        const totalFrames = 120;  // ~6 seconds of smooth animation
-        let frame = 0;
+        gif.addFrame(ctx, { copy: true, delay: 50 });
 
-        // Save original pulses so we can make a nice smooth loop
-        const originalPulses = stars.map(s => s.pulse);
+        frame++;
+        saveGifBtn.textContent = `Recording… ${Math.round(frame / totalFrames * 100)}%`;
 
-        const capture = () => {
-            // Redraw everything perfectly
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawCanvasBackground();
-            if (autoToggle.checked) autoConnect();
-            drawManualLines();
+        if (frame < totalFrames) {
+            setTimeout(capture, 1);
+        } else {
+            // THIS IS THE CRITICAL FIX
+            gif.on('finished', function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `constellation-${Date.now()}.gif`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
 
-            // Optional: slow beautiful rotation
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate(frame * 0.008);  // Remove this line if you don't want rotation
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
-            // Draw stars with smooth pulsing
-            stars.forEach((star, i) => {
-                star.pulse = originalPulses[i] + frame * 0.05;  // consistent animation
-                star.draw();
+                saveGifBtn.disabled = false;
+                saveGifBtn.textContent = "Save as GIF";
+                gif = null;
             });
 
-            ctx.restore();
+            // Force render immediately
+            try { gif.render(); } catch(e) { console.error(e); }
+        }
+    };
 
-            gif.addFrame(ctx, { copy: true, delay: 50 });
-
-            frame++;
-            saveGifBtn.textContent = `Recording… ${Math.round(frame / totalFrames * 100)}%`;
-
-            if (frame < totalFrames) {
-                setTimeout(capture, 1);
-            } else {
-                gif.on("finished", blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = `my-constellation-${Date.now()}.gif`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-
-                    saveGifBtn.disabled = false;
-                    saveGifBtn.textContent = "Save as GIF";
-                    gif = null;
-                });
-                gif.render();
-            }
-        };
-
-        capture();
-    });
+    capture();
+});
 
     // Start animation
     animate();
