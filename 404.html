@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - The Selcouth Soul</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    h1 { color: #333; }
+    a { color: #007bff; text-decoration: none; }
+  </style>
+  <script>
+    // Auto-redirect .html URLs to clean folder versions (with trailing slash)
+    (function() {
+      var path = window.location.pathname;
+      if (path.endsWith('.html')) {
+        var cleanPath = path.replace('.html', '/');
+        if (cleanPath === '/index.html') {
+          cleanPath = '/';
+        }
+        // Add trailing slash if needed (for folders)
+        if (cleanPath !== '/' && !cleanPath.endsWith('/')) {
+          cleanPath += '/';
+        }
+        window.location.replace(cleanPath + window.location.search);
+        return; // Stop here for .html redirects
+      }
+      // For non-.html 404s, just show the page (or redirect to home if you want)
+      // Optional: window.location.replace('/'); // Uncomment to always go to home
+    })();
+  </script>
+</head>
+<body>
+  <h1>404 - Page Not Found</h1>
+  <p>Sorry, that page doesn't exist. Redirecting you shortly...</p>
+  <p><a href="/">Back to Home</a></p>
+</body>
+</html>
