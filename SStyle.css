@@ -163,29 +163,27 @@ header {
 
 /* 5. HERO SECTION */
 
-/* ==================================== */
-
-.hero {
+ .hero {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     text-align: center;
-    padding-bottom: 10rem;
-    gap: .1rem;
+    padding-bottom: clamp(2rem, 5vw, 10rem); /* responsive padding-bottom */
+    gap: 0.1rem; /* small vertical gap for readability */
 }
 
 .hero h1 {
     font-family: 'Caveat', cursive;
-    font-size: clamp(1rem, 5vw, 3rem);
-    margin-bottom: .1rem;
+    font-size: clamp(1.5rem, 5vw, 3rem); /* slightly bigger minimum for small screens */
+    margin-bottom: 0.2rem;
     color: #5a3e88;
 }
 
 .hero p {
-    font-size: clamp(1rem, 3vw, 1.2rem);
+    font-size: clamp(1rem, 2.5vw, 1.2rem); /* slightly smaller max for very large screens */
     color: #555;
-    margin-bottom: .3rem;
+    margin-bottom: 0.5rem;
 }
 
 /* ==================================== */
@@ -195,33 +193,29 @@ header {
 /* ==================================== */
 
 .map {
+    position: relative;
     display: flex;
     justify-content: center;
-    margin-top: 6rem;
-    height: 8vh;
     align-items: center;
     flex-direction: column;
-    padding: 3rem 2rem;
+    padding: 1rem 2rem 4rem 2rem; /* top and bottom control spacing */
 }
 
 .svg-box {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
 }
-
 .heart-container {
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    width: clamp(100px, 25vw, 300px);
-    height: auto;
-    transform: translate(-50%, -50%);
-    z-index: 13;
-    cursor: pointer;
+    position: relative; /* was absolute */
+    width: clamp(100px, 25vw, 300px); /* responsive width */
+    height: auto; /* keep aspect ratio */
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    z-index: 13;
+    margin: 0 auto; /* center horizontally */
 }
 
 /* RED LINE REMOVED */
@@ -270,7 +264,7 @@ header {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
-    padding: 3rem 2rem;
+    padding: 2rem 2rem;
 }
 
 .realm-card {
@@ -289,7 +283,7 @@ header {
 
 .realm-card h3 {
     font-family: 'Caveat', cursive;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #734f9a;
 }
 
@@ -308,7 +302,7 @@ header {
 
 .quote {
     font-family: 'Caveat';
-    font-size: 1.8rem;
+    font-size: 2rem;
     max-width: 600px;
     margin: auto;
     color: #444;
@@ -367,6 +361,7 @@ footer {
 
 /* ==================================== */
 
+
 @media (max-width: 600px) {
     header {
         padding: 0.7rem 1rem;
@@ -402,7 +397,7 @@ footer {
     .map {
         margin-top: 1.5rem;
         height: auto;
-        min-height: 28vh;
+        min-height: 20vh;
         padding: 1.5rem 1rem;
     }
     .heart-container {
@@ -414,18 +409,61 @@ footer {
         padding: 2rem 1rem;
     }
     .realm-card h3 {
-        font-size: 1.35rem;
+        font-size: 1.9rem;
     }
     .quote-section,
     .submit {
         padding: 2rem 1rem;
     }
     .quote {
-        font-size: 1.35rem;
+        font-size: 1.9rem;
     }
     footer p {
         font-size: 0.8rem;
     }
+}
+/* 700px breakpoint */
+@media (max-width: 700px) {
+    header { padding: 0.8rem 1.2rem; }
+    .round-logo { width: 38px; height: 38px; }
+    .logo { font-size: 1.5rem; }
+    .nav a, .nav-btn { font-size: 0.95rem; padding: 0.5rem 0.7rem; }
+    .hero h1 { font-size: 2.3rem; }
+    .hero p { font-size: 1.05rem; }
+    .heart-container { width: clamp(130px, 40vw, 250px); }
+}
+
+/* 800px breakpoint */
+@media (max-width: 800px) {
+    header { padding: 0.9rem 1.5rem; }
+    .round-logo { width: 40px; height: 40px; }
+    .logo { font-size: 1.6rem; }
+    .nav a, .nav-btn { font-size: 1rem; padding: 0.6rem 0.8rem; }
+    .hero h1 { font-size: 2.5rem; }
+    .hero p { font-size: 1.1rem; }
+    .heart-container { width: clamp(140px, 38vw, 260px); }
+}
+
+/* 1000px breakpoint */
+@media (max-width: 1000px) {
+    header { padding: 1rem 2rem; }
+    .round-logo { width: 42px; height: 42px; }
+    .logo { font-size: 1.7rem; }
+    .nav a, .nav-btn { font-size: 1.05rem; padding: 0.65rem 0.9rem; }
+    .hero h1 { font-size: 2.7rem; }
+    .hero p { font-size: 1.15rem; }
+    .heart-container { width: clamp(150px, 35vw, 280px); }
+}
+
+/* 1600px+ breakpoint */
+@media (min-width: 1600px) {
+    header { padding: 1.2rem 3rem; }
+    .round-logo { width: 50px; height: 50px; }
+    .logo { font-size: 2rem; }
+    .nav a, .nav-btn { font-size: 1.2rem; padding: 0.8rem 1.2rem; }
+    .hero h1 { font-size: 3rem; }
+    .hero p { font-size: 1.3rem; }
+    .heart-container { width: clamp(200px, 30vw, 300px); }
 }
 
 /* ==================================== */
@@ -437,5 +475,7 @@ footer {
 /* ==================================== */
 
 /* FLOATING WORDS – quiet background */
+/* ================================= */
+/* PHONES / SMALL DEVICES <= 600px */
+/* Already done, keeping as-is */
 
-/* ==================================== */
