@@ -8,7 +8,7 @@ document.getElementById('region1').addEventListener('mouseenter', () => {
 
 // Right chamber → Game
 document.getElementById('region2').addEventListener('mouseenter', () => {
-  tooltip.textContent = 'Constellation Maker';
+  tooltip.textContent = 'Wobbly Drawing';
 });
 
 // Reset tooltip
@@ -24,7 +24,7 @@ document.getElementById('region1').addEventListener('click', () => {
 });
 
 document.getElementById('region2').addEventListener('click', () => {
-  location.href = 'constellation-maker/';
+  location.href = 'wobbly-drawing-canvas/';
 });
 
 
