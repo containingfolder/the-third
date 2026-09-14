@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>AI Chat to PDF Converter – Gemini & ChatGPT Downloader</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<meta name="description" content="Easily convert public Gemini and ChatGPT share links into clean, full-length PDFs without missing text or formatting cutoffs.">
+<meta name="keywords" content="ChatGPT to PDF, Gemini chat downloader, AI chat converter, save AI history as PDF">
+<meta name="author" content="The Selcouth Soul">
+<meta name="robots" content="index, follow">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Caveat&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- html2pdf.js library for client-side PDF rendering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+:root {
+  --bg: linear-gradient(to bottom right, #f9e8e2, #d0e7f9);
+  --text: #2d1b3d;
+  --accent: #a46ccf;
+  --card-bg: rgba(255, 255, 255, 0.88);
+  --border-line: #e0e0e0;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --glass: blur(12px);
+  --gap-main: 2.5rem;
+  --gap-cards: 1.5rem;
+  --padding-side: 1.5rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, sans-serif;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  width: 100%;
+  padding: 1rem var(--padding-side);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.round-logo {
+  width: 45px;
+  height: 45px;
+  background: #ddd;
+  border-radius: 50%;
+  background-image: url('../img.png');
+  background-size: 170%;
+  background-position: center;
+}
+
+.logo {
+  font-family: Caveat, cursive;
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+.nav {
+  display: flex;
+  gap: .3rem;
+  align-items: center;
+}
+
+.nav a, .nav-btn {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  padding: .6rem 1.2rem;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+.nav a:hover, .nav-btn:hover, .nav a.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.layout {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: var(--gap-main);
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 var(--padding-side);
+  width: 100%;
+}
+
+.center-content {
+  flex: 1;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-cards);
+}
+
+.page-title {
+  text-align: center;
+  font-family: Caveat, cursive;
+  font-size: 2.8rem;
+  color: var(--accent);
+}
+
+/* Tabs Styling */
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.tab-btn {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1.5px solid rgba(164, 108, 207, 0.3);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(164, 108, 207, 0.25);
+}
+
+.tool-panel {
+  display: none;
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  backdrop-filter: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.tool-panel.active {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.tool-panel h2 {
+  font-family: Caveat, cursive;
+  font-size: 2rem;
+  color: var(--accent);
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-weight: 600;
+  font-size: 0.95krem;
+  color: #444;
+}
+
+.url-input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  border: 1.5px solid rgba(164, 108, 207, 0.3);
+  border-radius: 12px;
+  outline: none;
+  background: rgba(250, 245, 255, 0.5);
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.url-input:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(164, 108, 207, 0.15);
+}
+
+.action-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.85rem 1.6rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  align-self: center;
+  box-shadow: 0 4px 12px rgba(164, 108, 207, 0.3);
+}
+
+.action-btn:hover {
+  background: #8a54b3;
+  transform: translateY(-2px);
+}
+
+.status-msg {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  min-height: 1.2rem;
+}
+
+/* Hidden PDF Preview / Compile Container */
+#pdf-preview-area {
+  padding: 20px;
+  background: #ffffff;
+  color: #111;
+  font-family: Inter, sans-serif;
+  display: none;
+}
+
+footer {
+  width: 100%;
+  padding: 1.5rem var(--padding-side);
+  text-align: center;
+  font-size: .9rem;
+  color: #888;
+  background: rgba(255, 255, 255, .4);
+  backdrop-filter: var(--glass);
+  border-top: 1px solid rgba(255, 255, 255, .3);
+}
+
+.privacy-link {
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.privacy-link:hover {
+  color: #8a54b3;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    padding: 0 1rem;
+  }
+  .tool-panel {
+    padding: 1.2rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="round-logo"></div>
+    <div class="logo">The Selcouth Soul</div>
+  </div>
+  <div class="nav">
+    <a href="../">Home</a>
+    <a href="../all-pages/">All Page</a>
+    <a href="../about/">About us</a>
+  </div>
+</header>
+
+<div class="layout">
+  <main class="center-content">
+    <h1 class="page-title">AI Chat to PDF Exporter</h1>
+    <p style="text-align:center;color:#666;margin-top:-1rem;font-size:1rem">
+      Never lose a long breakdown again. Paste your public link and download instantly.
+    </p>
+
+    <!-- Tab Buttons -->
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('gemini')">Gemini Chat</button>
+      <button class="tab-btn" onclick="switchTab('chatgpt')">ChatGPT Chat</button>
+    </div>
+
+    <!-- Gemini Panel -->
+    <div id="gemini-panel" class="tool-panel active">
+      <h2>Gemini Share Link Downloader</h2>
+      <div class="input-group">
+        <label for="geminiUrl">Paste Gemini Public Share URL:</label>
+        <input type="text" id="geminiUrl" class="url-input" placeholder="https://share.gemini.google/...">
+      </div>
+      <button class="action-btn" onclick="processAIExport('gemini')">Generate & Download PDF</button>
+      <div id="geminiStatus" class="status-msg"></div>
+    </div>
+
+    <!-- ChatGPT Panel -->
+    <div id="chatgpt-panel" class="tool-panel">
+      <h2>ChatGPT Share Link Downloader</h2>
+      <div class="input-group">
+        <label for="chatgptUrl">Paste ChatGPT Public Share URL:</label>
+        <input type="text" id="chatgptUrl" class="url-input" placeholder="https://chatgpt.com/share/...">
+      </div>
+      <button class="action-btn" onclick="processAIExport('chatgpt')">Generate & Download PDF</button>
+      <div id="chatgptStatus" class="status-msg"></div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <p>A quiet corner for captions & wishes</p>
+  <p>© 2026 The Selcouth Soul · All Rights Reserved · <span onclick='window.location.href="../privacy-policy/"' class="privacy-link">Privacy Policy</span></p>
+</footer>
+
+<script>
+function switchTab(platform) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tool-panel').forEach(panel => panel.classList.remove('active'));
+
+  if (platform === 'gemini') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('gemini-panel').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('chatgpt-panel').classList.add('active');
+  }
+}
+
+async function processAIExport(platform) {
+  const inputId = platform === 'gemini' ? 'geminiUrl' : 'chatgptUrl';
+  const statusId = platform === 'gemini' ? 'geminiStatus' : 'chatgptStatus';
+  const urlValue = document.getElementById(inputId).value.trim();
+  const statusEl = document.getElementById(statusId);
+
+  if (!urlValue) {
+    statusEl.style.color = '#d9534f';
+    statusEl.textContent = 'Please enter a valid share link first.';
+    return;
+  }
+
+  statusEl.style.color = 'var(--text)';
+  statusEl.textContent = 'Fetching shared chat content securely...';
+
+  try {
+    // Due to browser CORS protection on static GitHub sites, 
+    // we use a public CORS worker proxy to pull the target page text safely.
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(urlValue)}`;
+    const response = await fetch(proxyUrl);
+    const data = await response.json();
+
+    if (!data.contents) {
+      throw new Error('Could not retrieve contents from the provided link.');
+    }
+
+    // Basic text/HTML clean up simulation for layout structuring
+    statusEl.textContent = 'Formatting layout and compiling PDF...';
+    
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data.contents, 'text/html');
+    
+    // Extract main text or fallback to wrapper structure
+    let exportHTML = `
+      <div style="padding: 30px; font-family: Arial, sans-serif; color: #333;">
+        <h2 style="color: #6a408c; border-bottom: 2px solid #a46ccf; padding-bottom: 10px;">Exported ${platform.toUpperCase()} Chat</h2>
+        <p style="font-size: 12px; color: #777; margin-bottom: 20px;">Source URL: ${urlValue}</p>
+        <div style="line-height: 1.6; font-size: 14px;">
+          ${doc.body.innerText ? doc.body.innerText.replace(/\n/g, '<br>') : 'Unable to parse structural text cleanly. Please check the link.'}
+        </div>
+        <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 10px; color: #aaa; text-align: center; margin-top: 10px;">Generated via The Selcouth Soul</p>
+      </div>
+    `;
+
+    // Compile into PDF options using html2pdf
+    const opt = {
+      margin:       10,
+      filename:     `${platform}-chat-export.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Trigger local PDF download
+    await html2pdf().from(exportHTML).set(opt).save();
+
+    statusEl.style.color = '#2e8b57';
+    statusEl.textContent = 'PDF downloaded successfully!';
+  } catch (err) {
+    statusEl.style.color = '#d9534f';
+    statusEl.textContent = 'Error: Direct fetch blocked or invalid link. Try a different share URL.';
+  }
+}
+</script>
+
+</body>
+</html>
