@@ -3,8 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Interactive Birthday Card – The Selcouth Soul</title>
-    <meta name="description" content="Create and share interactive fireworks birthday card links with a live preview. Free tool by The Selcouth Soul.">
+    <title>Free Digital Birthday Card Maker – Send Interactive Fireworks Wishes Online</title>
+    <meta name="description" content="Create a personalized digital birthday card with floating balloons, custom wishes, and fireworks animations instantly. Free, fast, and no sign-up required by The Selcouth Soul.">
+    
+    <!-- SEO & Open Graph Social Sharing Tags -->
+    <meta name="keywords" content="digital birthday card maker, interactive birthday wish link, online birthday card creator, custom birthday animation, free e-cards">
+    <meta property="og:title" content="Free Digital Birthday Card Maker – The Selcouth Soul">
+    <meta property="og:description" content="Surprise your friends with an interactive fireworks birthday card link. Type your wish and share instantly!">
+    <meta property="og:type" content="website">
+
+    <!-- Schema.org Structured Data for Rich Snippets in Search Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Interactive Birthday Card Maker",
+      "url": "https://www.theselcouthsoul.com/birthday-card/",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Create customized, interactive digital birthday cards with floating balloon animations and customized wishes instantly."
+    }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../SStyle.css">
     <style>
@@ -26,7 +51,6 @@
             margin-bottom: 30px;
             font-size: 1.1rem;
         }
-        /* Framed live preview container */
         .preview-frame-wrapper {
             position: relative;
             width: 100%;
@@ -43,7 +67,6 @@
             height: 100%;
             border: none;
         }
-        /* Fullscreen button styling matching your site */
         .fullscreen-btn {
             display: inline-block;
             background: var(--accent, #a46ccf);
@@ -60,6 +83,28 @@
             opacity: 0.9;
             transform: translateY(-2px);
             background: #8a54b3;
+        }
+        /* SEO Content Section for Keyword Indexing */
+        .seo-content-section {
+            margin-top: 50px;
+            text-align: left;
+            background: var(--card-bg);
+            backdrop-filter: var(--glass);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(164, 108, 207, 0.2);
+        }
+        .seo-content-section h2 {
+            font-family: 'Caveat', cursive;
+            font-size: 2rem;
+            color: #734f9a;
+            margin-bottom: 12px;
+        }
+        .seo-content-section p {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
         @media (max-width: 600px) {
             .hub-title { font-size: 2.3rem; }
@@ -93,12 +138,11 @@
 
 <main class="birthday-hub-container">
     <h1 class="hub-title">Interactive Fireworks Birthday Card</h1>
-    <p class="hub-subtitle">Preview the experience below or open it in full screen to create a custom link for your loved ones ♡</p>
+    <p class="hub-subtitle">Test out the live generator below or launch it full screen to create a custom surprise link ♡</p>
 
     <!-- Embedded frame showing the birthday tool live -->
     <div class="preview-frame-wrapper">
-        <!-- Assuming you save the birthday code file as "tool.html" in the same folder -->
-        <iframe src="tool.html" title="Birthday Card Preview"></iframe>
+        <iframe src="tool.html" title="Interactive Birthday Card Generator"></iframe>
     </div>
 
     <!-- Action button opening the tool fully in a new page/tab -->
@@ -107,6 +151,13 @@
             Open Full Screen Experience ✨
         </a>
     </div>
+
+    <!-- Hidden text/SEO block to help Google rank the page for organic queries -->
+    <section class="seo-content-section">
+        <h2>How to Send a Unique Digital Birthday Wish</h2>
+        <p>Looking for a creative alternative to boring text messages? With <strong>The Selcouth Soul's Interactive Birthday Card Maker</strong>, you can instantly design a custom digital e-card featuring dynamic fireworks, background music, floating name balloons, and an expressive handwritten note.</p>
+        <p>No downloads or registrations required. Simply type your friend's name and your heartfelt message, generate your unique link, and text it directly to them for an unforgettable surprise.</p>
+    </section>
 </main>
 
 <footer>
