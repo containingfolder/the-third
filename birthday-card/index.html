@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Interactive Birthday Card – The Selcouth Soul</title>
+    <meta name="description" content="Create and share interactive fireworks birthday card links with a live preview. Free tool by The Selcouth Soul.">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../SStyle.css">
+    <style>
+        .birthday-hub-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+        }
+        .hub-title {
+            font-family: 'Caveat', cursive;
+            font-size: 3rem;
+            color: var(--accent, #a46ccf);
+            margin-bottom: 8px;
+        }
+        .hub-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        /* Framed live preview container */
+        .preview-frame-wrapper {
+            position: relative;
+            width: 100%;
+            height: 480px;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(164, 108, 207, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        .preview-frame-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* Fullscreen button styling matching your site */
+        .fullscreen-btn {
+            display: inline-block;
+            background: var(--accent, #a46ccf);
+            color: white;
+            text-decoration: none;
+            padding: 14px 36px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(164, 108, 207, 0.3);
+        }
+        .fullscreen-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            background: #8a54b3;
+        }
+        @media (max-width: 600px) {
+            .hub-title { font-size: 2.3rem; }
+            .preview-frame-wrapper { height: 380px; }
+            .fullscreen-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body class="category-page">
+
+<header>
+    <div class="header-left">
+        <div class="round-logo"></div>
+        <div class="logo">The Selcouth Soul</div>
+    </div>
+    <div class="nav">
+        <a href="../">Home</a>
+        <div class="dropdown">
+            <button class="nav-btn" id="categories-btn">Categories</button>
+            <div class="dropdown-content">
+                <a href="../good-vibes/">Good Vibes Tap</a>
+                <a href="../constellation-maker/">Constellation Maker</a>
+                <a href="../font-converter/">Font Converter</a>
+                <a href="./" class="active">Birthday Card Maker</a>
+            </div>
+        </div>
+        <a href="../all-pages/">All Page</a>
+        <a href="../about/">About us</a>
+    </div>
+</header>
+
+<main class="birthday-hub-container">
+    <h1 class="hub-title">Interactive Fireworks Birthday Card</h1>
+    <p class="hub-subtitle">Preview the experience below or open it in full screen to create a custom link for your loved ones ♡</p>
+
+    <!-- Embedded frame showing the birthday tool live -->
+    <div class="preview-frame-wrapper">
+        <!-- Assuming you save the birthday code file as "tool.html" in the same folder -->
+        <iframe src="tool.html" title="Birthday Card Preview"></iframe>
+    </div>
+
+    <!-- Action button opening the tool fully in a new page/tab -->
+    <div>
+        <a href="tool.html" target="_blank" rel="noopener noreferrer" class="fullscreen-btn">
+            Open Full Screen Experience ✨
+        </a>
+    </div>
+</main>
+
+<footer>
+    <p>A quiet corner for captions & wishes</p>
+    <p>© 2026 The Selcouth Soul · All Rights Reserved · 
+        <span onclick='window.location.href="../privacy-policy/"' class="privacy-link">Privacy Policy</span>
+    </p>
+</footer>
+
+</body>
+</html>
